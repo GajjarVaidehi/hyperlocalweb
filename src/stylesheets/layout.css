@@ -33,3 +33,15 @@
   left: 0;
   right: 0;
 }
+
+button {
+  background-color: #023247;
+  box-sizing: none;
+  border: 1 px solid rgb(233, 221, 221);
+  color: white;
+  padding: 5px;
+}
+
+button:hover {
+  background-color: rgb(175, 110, 98);
+}
