@@ -10,6 +10,9 @@ import { useDispatch, useSelector } from "react-redux";
 function HomePage() {
   const [products, setProducts] = useState([]);
   const { cartItems } = useSelector((state) => state.cartReducer);
+  const [loading, setLoading] = useState(false);
+  const [searchKey, setSearchKey] = useState('')
+  const [filterType, setFilterType] = useState('')
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -19,6 +22,8 @@ function HomePage() {
 
   async function getData() {
     try {
+      setLoading(true)
+
       const users = await getDocs(collection(fireDB, "products"));
       const productsArray = [];
       users.forEach((doc) => {
@@ -28,10 +33,12 @@ function HomePage() {
         };
 
         productsArray.push(obj);
+        setLoading(false)
       });
       setProducts(productsArray);
     } catch (error) {
       console.log(error);
+      setLoading(false)
     }
   }
 
@@ -44,45 +51,60 @@ function HomePage() {
   };
 
   return (
-    <Layout>
+    <Layout loading={loading}>
       <div className="container">
+        <div className="d-flex w-50 align-items-center my-3 justify-content-center" >
+          <input type="text" value={searchKey}
+            onChange={(e) => { setSearchKey(e.target.value) }}
+            className="form-control mx-2" placeholder="'Search Items" />
+          <select className="form-control mt-3" value={filterType}
+            onChange={(e) => { setFilterType(e.target.value) }}>
+            <option value="">All</option>
+            <option value="sport">Sport</option>
+            <option value="toy">Toy</option>
+            <option value="dairy">Dairy</option>
+          </select>
+        </div>
         <div className="row">
-          {products.map((product) => {
-            return (
-              <div className="col-md-4">
-                <div className="m-2 p-1 product position-relative">
-                  <div className="product-content">
-                    <p>{product.name}</p>
-                    <div className="text-center">
-                      <img
-                        src={product.imageURL}
-                        alt=""
-                        className="product-img"
-                      />
+          {products
+            .filter(obj => obj.name.toLowerCase().includes(searchKey))
+            .filter((obj) => obj.category.toLowerCase().includes(filterType))
+            .map((product) => {
+              return (
+                <div className="col-md-4">
+                  <div className="m-2 p-1 product position-relative">
+                    <div className="product-content">
+                      <p>{product.name}</p>
+                      <div className="text-center">
+                        <img
+                          src={product.imageURL}
+                          alt=""
+                          className="product-img"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="product-actions">
-                    <h2>Rs.{product.price} /-</h2>
-                    <div className="d-flex">
-                      <button
-                        className="mx-2"
-                        onClick={() => addToCart(product)}
-                      >
-                        ADD TO CART
-                      </button>
-                      <button
-                        onClick={() => {
-                          navigate("/productinfo/${product.id}");
-                        }}
-                      >
-                        VIEW
-                      </button>
+                    <div className="product-actions">
+                      <h2>Rs.{product.price} /-</h2>
+                      <div className="d-flex">
+                        <button
+                          className="mx-2"
+                          onClick={() => addToCart(product)}
+                        >
+                          ADD TO CART
+                        </button>
+                        <button
+                          onClick={() => {
+                            navigate("/productinfo/${product.id}");
+                          }}
+                        >
+                          VIEW
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
     </Layout>

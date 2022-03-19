@@ -45,3 +45,24 @@ button {
 button:hover {
   background-color: rgb(175, 110, 98);
 }
+
+.loader{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  z-index: 99999;
+}
+
+.spinner-border{
+  height: 100px;
+  width: 100px;
+}
+
+a{
+  text-decoration: none;
+}
+
+input,select{
+  height: 35px !important;
+}
